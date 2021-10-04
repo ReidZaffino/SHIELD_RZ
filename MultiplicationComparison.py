@@ -13,7 +13,7 @@ def main():
     bitwidth = 93
 
     #Randomized numbers within the specified bitwidth, and specify number of trials.
-    numOfTrials = 100
+    numOfTrials = 1000
     a = [random.randint(0, 2**bitwidth - 1) for _ in range(numOfTrials)]
     b = [random.randint(0, 2**bitwidth - 1) for _ in range(numOfTrials)]
 
