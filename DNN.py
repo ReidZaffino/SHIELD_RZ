@@ -345,7 +345,7 @@ def unpickle(file):
 
 def main():
 
-    layers_dims = [3072, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+    layers_dims = [3072, 2048, 128, 1]
 
     dir_path =  os.path.realpath('./')
     file1 = dir_path + "\cifar-10-batches-py\data_batch_1"
@@ -374,7 +374,8 @@ def main():
         test_y[i][int(test_y_a[i])] = 1
     test_y = test_y.T
 
-    print("hi")
+    train_y_1 = np.reshape(train_y_1[1, :], (1, 10000))
+    parameters, costs = L_layer_model(train_x_1, train_y_1, layers_dims, num_iterations = 500, print_cost = True)
 
 if __name__ == "__main__":
     main()
