@@ -313,7 +313,7 @@ def predict(X, Y, parameters, ss):
     
     return sum/Y.shape[1]
 
-def L_layer_model(X, Y, layers_dims, learning_rate = 0.4, num_iterations = 3000, print_cost=False, ss=False):
+def L_layer_model(X, Y, Xt, Yt, layers_dims, wf, learning_rate = 1, num_iterations = 3000, print_cost=False, ss=False):
     """
     Implements a L-layer neural network: [LINEAR->tanh]*(L-1)->LINEAR->SIGMOID.
     
@@ -328,6 +328,8 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.4, num_iterations = 3000,
     Returns:
     parameters -- parameters learnt by the model. They can then be used to predict.
     """
+
+    start = time.time()
 
     np.random.seed(1)
     costs = []                         # keep track of cost
@@ -352,47 +354,164 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.4, num_iterations = 3000,
         
         # Print the cost every 100 iterations
         if print_cost and i % 100 == 0 or i == num_iterations - 1:
-            print("Cost after iteration {}: {}   {}".format(i, np.squeeze(cost), predict(X, Y, parameters, ss)))
+            curr = time.time()
+            print(str(i) + "\t\t\t" +  str(np.squeeze(cost)) + "\t\t" + str(predict(X, Y, parameters, ss)) + "\t\t" + str(predict(Xt, Yt, parameters, ss)) + "\t\t\t" + str(curr - start))
+            wf.write(str(i) + "\t\t\t" +  str(np.squeeze(cost)) + "\t\t" + str(predict(X, Y, parameters, ss)) + "\t\t" + str(predict(Xt, Yt, parameters, ss)) + "\t\t\t" + str(curr - start) + "\n")
             
         if i % 100 == 0 or i == num_iterations:
             costs.append(cost)
     
     return parameters, costs
 
-def main():
+def run(learning_rate, layers_dims, num_iterations, ss, wf):
     np.random.seed(1)
 
     dir_path =  os.path.realpath('./')
     file1 = dir_path + "\cifar-10-batches-py\data_batch_1"
+    file2 = dir_path + "\cifar-10-batches-py\data_batch_2"
+    file3 = dir_path + "\cifar-10-batches-py\data_batch_3"
+    file4 = dir_path + "\cifar-10-batches-py\data_batch_4"
+    file5 = dir_path + "\cifar-10-batches-py\data_batch_5"
+    filet = dir_path + "\cifar-10-batches-py\\test_batch"
 
-    f = open(file1, 'rb')
-    datadict = cPickle.load(f,encoding='latin1')
-    f.close()
-    X = datadict["data"] 
-    Y = datadict['labels']
+    f1 = open(file1, 'rb')
+    data1 = cPickle.load(f1, encoding = 'latin1')
+    f1.close()
+    X1 = data1["data"] 
+    Y1 = data1["labels"]
 
-    nonbin = []
-    for i in range (len(Y)):
-        if (Y[i] != 0 and Y[i] != 1):
-            nonbin.append(i)
+    f2 = open(file2, 'rb')
+    data2 = cPickle.load(f2, encoding = 'latin1')
+    f2.close()
+    X2 = data2["data"]
+    Y2 = data2["labels"]
 
-    X = np.delete(X, nonbin, axis = 0)
-    Y = np.delete(Y, nonbin)
-    a_list = list(range(1, 1000))
-    X = np.delete(X, a_list, axis = 0)
-    Y = np.delete(Y, a_list)
+    f3 = open(file3, 'rb')
+    data3 = cPickle.load(f3, encoding = 'latin1')
+    f3.close()
+    X3 = data3["data"]
+    Y3 = data3["labels"]
 
-    X = (X.reshape(X.shape[0], -1)/255.).T
-    Y = Y.reshape(1, Y.shape[0])
+    f4 = open(file4, 'rb')
+    data4 = cPickle.load(f4, encoding = 'latin1')
+    f4.close()
+    X4 = data4["data"]
+    Y4 = data4["labels"]
 
-    train_x = X
-    train_y = Y
+    f5 = open(file5, 'rb')
+    data5 = cPickle.load(f5, encoding = 'latin1')
+    f5.close()
+    X5 = data2["data"]
+    Y5 = data2["labels"]
 
-    layers_dims = [3072, 20, 7, 5, 1] #  4-layer model
+    ft = open(filet, 'rb')
+    datat = cPickle.load(ft, encoding = 'latin1')
+    ft.close()
+    Xt = datat["data"]
+    Yt = datat["labels"]
 
-    parameters, costs = L_layer_model(X, Y, layers_dims, learning_rate = 1, num_iterations = 20000, print_cost = True, ss = True)
+    nonbin1 = []
+    for i in range (len(Y1)):
+        if (Y1[i] != 0 and Y1[i] != 1):
+            nonbin1.append(i)
 
-    p = predict(X,Y,parameters, False)
+    nonbin2 = []
+    for i in range (len(Y2)):
+        if (Y2[i] != 0 and Y2[i] != 1):
+            nonbin2.append(i)
+
+    nonbin3 = []
+    for i in range (len(Y3)):
+        if (Y3[i] != 0 and Y3[i] != 1):
+            nonbin3.append(i)
+
+    nonbin4 = []
+    for i in range (len(Y4)):
+        if (Y4[i] != 0 and Y4[i] != 1):
+            nonbin4.append(i)
+
+    nonbin5 = []
+    for i in range (len(Y5)):
+        if (Y5[i] != 0 and Y5[i] != 1):
+            nonbin5.append(i)
+
+    nonbint = []
+    for i in range (len(Yt)):
+        if (Yt[i] != 0 and Yt[i] != 1):
+            nonbint.append(i)
+
+    X1 = np.delete(X1, nonbin1, axis = 0)
+    Y1 = np.delete(Y1, nonbin1)
+
+    X2 = np.delete(X2, nonbin2, axis = 0)
+    Y2 = np.delete(Y2, nonbin2)
+
+    X3 = np.delete(X3, nonbin3, axis = 0)
+    Y3 = np.delete(Y3, nonbin3)
+
+    X4 = np.delete(X4, nonbin4, axis = 0)
+    Y4 = np.delete(Y4, nonbin4)
+
+    X5 = np.delete(X5, nonbin5, axis = 0)
+    Y5 = np.delete(Y5, nonbin5)
+
+    Xt = np.delete(Xt, nonbint, axis = 0)
+    Yt = np.delete(Yt, nonbint)
+
+    X1 = (X1.reshape(X1.shape[0], -1)/255.).T
+    Y1 = Y1.reshape(1, Y1.shape[0])
+
+    X2 = (X2.reshape(X2.shape[0], -1)/255.).T
+    Y2 = Y2.reshape(1, Y2.shape[0])
+
+    X3 = (X3.reshape(X3.shape[0], -1)/255.).T
+    Y3 = Y3.reshape(1, Y3.shape[0])
+
+    X4 = (X4.reshape(X4.shape[0], -1)/255.).T
+    Y4 = Y4.reshape(1, Y4.shape[0])
+
+    X5 = (X5.reshape(X5.shape[0], -1)/255.).T
+    Y5 = Y5.reshape(1, Y5.shape[0])
+
+    Xt = (Xt.reshape(Xt.shape[0], -1)/255.).T
+    Yt = Yt.reshape(1, Yt.shape[0])
+
+    X1 = np.append(X1, X2, axis = 1)
+    X3 = np.append(X3, X4, axis = 1)
+    X = np.append(X1, X3, axis = 1)
+    X = np.append(X, X5, axis = 1)
+
+    Y1 = np.append(Y1, Y2, axis = 1)
+    Y3 = np.append(Y3, Y4, axis = 1)
+    Y = np.append(Y1, Y3, axis = 1)
+    Y = np.append(Y, Y5, axis = 1)
+
+    parameters, costs = L_layer_model(X, Y, Xt, Yt, layers_dims, wf, learning_rate, num_iterations, print_cost = True, ss = ss)
+
+def main():
+
+    num_iterations = 10000
+    ss = True
+    base_rate = 0.1
+    learning_rate = base_rate
+    hl = 1
+    layers_dims = [3072, hl, 1]
+    dir_path =  os.path.realpath('./')
+    
+    for i in range(10):
+        for j in range(5):
+            learning_rate = base_rate * (1 + j)
+            hl = 2**(i)
+            layers_dims = [3072, hl, 1]
+            wfile = dir_path + "\cifar-10-batches-py\out_ss_" + str(ss) + "_lr_" + str(learning_rate) + "_hl_" + str(hl) + ".txt"
+            wf = open(wfile, "w")
+            print("out_ss_" + str(ss) + "_lr_" + str(learning_rate) + "_hl_" + str(hl) + ".txt")
+            wf.write("out_ss_" + str(ss) + "_lr_" + str(learning_rate) + "_hl_" + str(hl) + "\n")
+            print("Iteration\t\tCost\t\t\t\tTraining Accuracy\t\tTest Accuracy\t\tTime")
+            wf.write("Iteration\t\tCost\t\t\t\tTraining Accuracy\t\tTest Accuracy\t\tTime\n")
+            run(learning_rate , layers_dims, num_iterations, ss, wf)
+            wf.close()
+    
 
 
 if __name__ == "__main__":
